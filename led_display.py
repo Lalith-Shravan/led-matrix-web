@@ -14,7 +14,7 @@ class LEDDisplay:
                  led_gpio_mapping="regular",
                  led_scan_mode=1,
                  led_pwm_lsb_nanoseconds=130,
-                 led_show_refresh=True,
+                 led_show_refresh=False,
                  led_slowdown_gpio=1,
                  led_no_hardware_pulse=False,
                  led_rgb_sequence="RGB",
@@ -55,7 +55,30 @@ class LEDDisplay:
 
         self.font = font
     
-    def drawText(self, richText, duration = 5):
-        graphics.DrawText(self.matrix, self.font, 0, self.font.height, richText.color, richText.text)
-        time.sleep(duration)
+    def drawText(self, message):
+
+        textLength = 0
+        for richText in message:
+            textLength += len(richText.text)
+
+        fontWidth = self.font.CharacterWidth(ord('A'))
+        textLength *= fontWidth
+
+        messageXPos = 0
+
+        nextFrame = self.matrix.CreateFrameCanvas()
+        
+        while abs(messageXPos) < textLength:
+            richTextXPos = messageXPos
+            
+            for richText in message:
+                graphics.DrawText(nextFrame, self.font, richTextXPos, self.font.height, richText.color, richText.text)
+                richTextXPos += len(richText.text) * fontWidth
+
+            self.matrix.SwapOnVSync(nextFrame, 4)
+            if messageXPos == 0:
+                time.sleep(0.5)
+            
+            nextFrame.Clear()
+            messageXPos -= 1
         self.matrix.Clear()
