@@ -1,5 +1,5 @@
 from html.parser import HTMLParser
-from ..rich_text import RichText
+from ..display.rich_text import RichText
 
 from rgbmatrix import graphics
 

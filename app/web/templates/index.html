@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HTML to RichText</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 text-gray-900">
+    <div class="flex flex-col items-center w-screen">
+        <div class="flex items-center h-screen gap-2">
+            <div class="bg-white p-8 rounded-xl shadow-lg max-w-xl w-full">
+                <h1 class="font-bold text-3xl mb-4">PI5 Text</h1>
+                <p class="mb-2 text-gray-700">Type your message below to display it on the pi5 board. You can use HTML
+                    style tags.</p>
+
+                <form class="mt-4" id="convertForm">
+                    <textarea name="html" rows="6" placeholder="<p>Hello <span style='color: #ff0000;'>World</span></p>"
+                        class="w-full border border-gray-300 rounded-md px-4 py-2 text-sm text-black font-mono resize-none"></textarea>
+
+                    <button type="submit"
+                        class="mt-4 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-all">
+                        Send
+                    </button>
+                </form>
+
+                <p id="status" class="mt-4 text-sm text-gray-600">Type your message and hit send.</p>
+            </div>
+
+            <div class="bg-white p-8 rounded-xl shadow-lg max-w-xl w-full">
+                <h1 class="font-bold text-3xl mb-4">PI5 Image</h1>
+                <p class="mb-2 text-gray-700">Upload your image here to have it appear on the PI5 board. It will automatically resize to fit the board.</p>
+
+                <form class="mt-4" action="/send-image" method="post" enctype="multipart/form-data">
+                    <input type="file" name="file">
+                    <input type="submit" value="Upload">
+                </form>
+
+                <p class="mt-4 text-sm text-gray-600">Upload your image(s) and hit send.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('convertForm');
+        const statusEl = document.getElementById('status');
+        const outputEl = document.getElementById('output');
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            statusEl.textContent = "Sending...";
+
+            const formData = new FormData(form);
+            const htmlInput = formData.get('html');
+
+            try {
+                const res = await fetch('/send-message', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: htmlInput })
+                });
+
+                if (!res.ok) throw new Error(`Status ${res.status}`);
+                statusEl.textContent = "Sent successfully! Send another one?";
+            } catch (err) {
+                statusEl.textContent = "Message failed. Check console.";
+                console.error(err);
+            }
+        });
+    </script>
+</body>
+
+</html>

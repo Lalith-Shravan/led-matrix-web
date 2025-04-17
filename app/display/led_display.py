@@ -1,5 +1,4 @@
 import time
-from typing import Optional
 
 from rgbmatrix import RGBMatrix, RGBMatrixOptions, graphics
 from PIL import Image
@@ -52,14 +51,14 @@ class LEDDisplay:
 
         font = graphics.Font()
         # TODO: Make path dynamic
-        font.LoadFont("/home/caadmin/pi5-project/pi5board/fonts/9x18.bdf")
+        font.LoadFont("/home/caadmin/led-matrix-web/fonts/9x18.bdf")
 
         self.font = font
         
 
         boldFont = graphics.Font()
         # TODO: Make path dynamic
-        boldFont.LoadFont("/home/caadmin/pi5-project/pi5board/fonts/9x18B.bdf")
+        boldFont.LoadFont("/home/caadmin/led-matrix-web/fonts/9x18B.bdf")
 
         self.boldFont = boldFont
     
