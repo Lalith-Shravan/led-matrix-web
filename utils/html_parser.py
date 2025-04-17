@@ -9,6 +9,8 @@ class RichTextHTMLParser(HTMLParser):
         self.rich_text_parts = []
         self.current_color = graphics.Color(255, 255, 255)
         self.color_stack = []
+        self.bold_stack = []
+        self.current_bold = "normal"
 
     def handle_starttag(self, tag, attrs):
         if tag == "span":
@@ -17,14 +19,19 @@ class RichTextHTMLParser(HTMLParser):
             if color:
                 self.color_stack.append(self.current_color)
                 self.current_color = color
+        elif tag in ["b", "strong"]:
+            self.bold_stack.append(self.current_bold)
+            self.current_bold = "bold"
 
     def handle_endtag(self, tag):
         if tag == "span" and self.color_stack:
             self.current_color = self.color_stack.pop()
+        elif tag in ["b", "strong"] and self.bold_stack:
+            self.current_bold = self.bold_stack.pop()
 
     def handle_data(self, data):
         if data.strip():  # skip whitespace-only text nodes
-            self.rich_text_parts.append(RichText(data, self.current_color))
+            self.rich_text_parts.append(RichText(data, self.current_color, self.current_bold))
 
     def parse_color_from_style(self, style):
         if "color" in style:

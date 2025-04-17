@@ -2,6 +2,7 @@ import time
 from typing import Optional
 
 from rgbmatrix import RGBMatrix, RGBMatrixOptions, graphics
+from PIL import Image
 
 class LEDDisplay:
     def __init__(self,
@@ -54,6 +55,13 @@ class LEDDisplay:
         font.LoadFont("/home/caadmin/pi5-project/pi5board/fonts/9x18.bdf")
 
         self.font = font
+        
+
+        boldFont = graphics.Font()
+        # TODO: Make path dynamic
+        boldFont.LoadFont("/home/caadmin/pi5-project/pi5board/fonts/9x18B.bdf")
+
+        self.boldFont = boldFont
     
     def drawText(self, message):
 
@@ -72,7 +80,7 @@ class LEDDisplay:
             richTextXPos = messageXPos
             
             for richText in message:
-                graphics.DrawText(nextFrame, self.font, richTextXPos, self.font.height, richText.color, richText.text)
+                graphics.DrawText(nextFrame, self.font if richText.bold == "normal" else self.boldFont, richTextXPos, self.font.height, richText.color, richText.text)
                 richTextXPos += len(richText.text) * fontWidth
 
             self.matrix.SwapOnVSync(nextFrame, 4)
@@ -81,4 +89,42 @@ class LEDDisplay:
             
             nextFrame.Clear()
             messageXPos -= 1
+        self.matrix.Clear()
+
+    def displayImage(self, imageFile, duration = 5):
+        image = Image.open(imageFile)
+
+        image.thumbnail((self.matrix.width, self.matrix.height))
+
+        self.matrix.SetImage(image.convert('RGB'))
+
+        time.sleep(5)
+
+        self.matrix.Clear()
+
+    def displayAnimation(self, gifFile, duration = None):
+        gif = Image.open(gifFile)
+
+        try:
+            num_frames = gif.n_frames
+        except AttributeError:
+            raise Exception("Image provided was not a gif.")
+        
+        gifFrames = []
+        
+        for i in range(0, num_frames):
+            gif.seek(i)
+            frame = gif.copy()
+            frame.thumbnail((self.matrix.width, self.matrix.height))
+            canvas = self.matrix.CreateFrameCanvas()
+            canvas.SetImage(frame.convert("RGB"))
+            gifFrames.append(canvas)
+        gif.close()
+
+        curFrame = 0
+
+        while curFrame < num_frames - 1:
+            self.matrix.SwapOnVSync(gifFrames[curFrame], 4)
+            curFrame += 1
+
         self.matrix.Clear()
