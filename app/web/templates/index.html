@@ -10,7 +10,7 @@
 
 <body class="bg-gray-100 text-gray-900">
     <div class="flex flex-col items-center w-screen">
-        <div class="flex items-center h-screen gap-2">
+        <div class="flex items-center h-screen gap-2 flex-wrap">
             <div class="bg-white p-8 rounded-xl shadow-lg max-w-xl w-full">
                 <h1 class="font-bold text-3xl mb-4">PI5 Text</h1>
                 <p class="mb-2 text-gray-700">Type your message below to display it on the pi5 board. You can use HTML
@@ -40,6 +40,23 @@
 
                 <p class="mt-4 text-sm text-gray-600">Upload your image(s) and hit send.</p>
             </div>
+
+            <div class="bg-white p-8 rounded-xl shadow-lg max-w-xl w-full">
+                <h1 class="font-bold text-3xl mb-4">PI5 Graph</h1>
+                <p class="mb-2 text-gray-700">Enter JSON data below to send to the graph endpoint. The JSON will be sent as a string.</p>
+
+                <form class="mt-4" id="graphForm">
+                    <textarea name="json" rows="6" placeholder='{"type": "bar", "data": [1, 2, 3, 4, 5]}'
+                        class="w-full border border-gray-300 rounded-md px-4 py-2 text-sm text-black font-mono resize-none"></textarea>
+
+                    <button type="submit"
+                        class="mt-4 bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-all">
+                        Send Graph
+                    </button>
+                </form>
+
+                <p id="graphStatus" class="mt-4 text-sm text-gray-600">Enter your JSON data and hit send.</p>
+            </div>
         </div>
     </div>
 
@@ -66,6 +83,32 @@
                 statusEl.textContent = "Sent successfully! Send another one?";
             } catch (err) {
                 statusEl.textContent = "Message failed. Check console.";
+                console.error(err);
+            }
+        });
+
+        // Handle graph form submission
+        const graphForm = document.getElementById('graphForm');
+        const graphStatusEl = document.getElementById('graphStatus');
+
+        graphForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            graphStatusEl.textContent = "Sending...";
+
+            const formData = new FormData(graphForm);
+            const jsonInput = formData.get('json');
+
+            try {
+                const res = await fetch('/send-graph', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: jsonInput })
+                });
+
+                if (!res.ok) throw new Error(`Status ${res.status}`);
+                graphStatusEl.textContent = "Graph data sent successfully! Send another one?";
+            } catch (err) {
+                graphStatusEl.textContent = "Graph data failed. Check console.";
                 console.error(err);
             }
         });
