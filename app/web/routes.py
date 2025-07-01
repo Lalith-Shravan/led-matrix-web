@@ -37,7 +37,7 @@ def queue_image():
         return 'No selected file'
 
     if file and (getFileExtension(file.filename) in ["jpg", "jpeg", "png"]):
-        filename = secure_filename(file.filename)
+        filename = f"{uuid.uuid4()}.{getFileExtension(file.filename)}"
         upload_folder = current_app.config['UPLOAD_FOLDER']
         filepath = os.path.join(upload_folder, filename)
         file.save(filepath)
@@ -62,14 +62,15 @@ def queue_graph():
         for x_value in x_values:
             y_values.append(data.get(x_value))
 
-        # TODO: Make figsize fit
-        plt.figure(figsize=(2, 1))
+        width = current_app.display.matrix.width
+        height = current_app.display.matrix.height
+
+        plt.figure(figsize=(width, height))
         
         plt.bar(x_values, y_values)
 
         plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
         plt.axis('off')
-        plt.margins(0)
 
         name = f"/{uuid.uuid4()}.png"
 

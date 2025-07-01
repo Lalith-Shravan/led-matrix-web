@@ -8,12 +8,10 @@ from ..utils import getFileExtension
 from app.display.rich_text import RichText
 
 
-def startProcessQueueService():
+def startProcessQueueService(display: LEDDisplay):
     queue = Queue()
 
     def processQueueService():
-        # TODO: Make options customizable
-        display = LEDDisplay(led_slowdown_gpio=4, led_gpio_mapping="adafruit-hat",limit_refresh_rate_hz=120)
 
         while True:
             try:

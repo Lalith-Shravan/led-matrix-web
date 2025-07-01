@@ -8,9 +8,9 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
-<body class="bg-gray-100 text-gray-900">
+<body class="bg-gray-100 text-gray-900 my-12">
     <div class="flex flex-col items-center w-screen">
-        <div class="flex items-center h-screen gap-2 flex-wrap">
+        <div class="flex flex-col items-center h-full gap-2">
             <div class="bg-white p-8 rounded-xl shadow-lg max-w-xl w-full">
                 <h1 class="font-bold text-3xl mb-4">PI5 Text</h1>
                 <p class="mb-2 text-gray-700">Type your message below to display it on the pi5 board. You can use HTML
@@ -33,12 +33,14 @@
                 <h1 class="font-bold text-3xl mb-4">PI5 Image</h1>
                 <p class="mb-2 text-gray-700">Upload your image here to have it appear on the PI5 board. It will automatically resize to fit the board.</p>
 
-                <form class="mt-4" action="/send-image" method="post" enctype="multipart/form-data">
-                    <input type="file" name="file">
-                    <input type="submit" value="Upload">
+                <form class="mt-4" id="imageForm">
+                    <input type="file" name="file" class="border border-gray-300 rounded-md px-4 py-2 text-sm text-black font-mono">
+                    <button type="submit" class="mt-4 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-all">
+                        Upload
+                    </button>
                 </form>
 
-                <p class="mt-4 text-sm text-gray-600">Upload your image(s) and hit send.</p>
+                <p id="imageStatus" class="mt-4 text-sm text-gray-600">Upload your image(s) and hit send.</p>
             </div>
 
             <div class="bg-white p-8 rounded-xl shadow-lg max-w-xl w-full">
@@ -46,11 +48,11 @@
                 <p class="mb-2 text-gray-700">Enter JSON data below to send to the graph endpoint. The JSON will be sent as a string.</p>
 
                 <form class="mt-4" id="graphForm">
-                    <textarea name="json" rows="6" placeholder='{"type": "bar", "data": [1, 2, 3, 4, 5]}'
+                    <textarea name="json" rows="6" placeholder='{"type": "bar", "data": {"A": 1, "B": 2}}'
                         class="w-full border border-gray-300 rounded-md px-4 py-2 text-sm text-black font-mono resize-none"></textarea>
 
                     <button type="submit"
-                        class="mt-4 bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-all">
+                        class="mt-4 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-all">
                         Send Graph
                     </button>
                 </form>
@@ -109,6 +111,30 @@
                 graphStatusEl.textContent = "Graph data sent successfully! Send another one?";
             } catch (err) {
                 graphStatusEl.textContent = "Graph data failed. Check console.";
+                console.error(err);
+            }
+        });
+
+        // Handle image form submission
+        const imageForm = document.getElementById('imageForm');
+        const imageStatusEl = document.getElementById('imageStatus');
+
+        imageForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            imageStatusEl.textContent = "Uploading...";
+
+            const formData = new FormData(imageForm);
+
+            try {
+                const res = await fetch('/send-image', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!res.ok) throw new Error(`Status ${res.status}`);
+                imageStatusEl.textContent = "Image uploaded successfully! Upload another one?";
+            } catch (err) {
+                imageStatusEl.textContent = "Image upload failed. Check console.";
                 console.error(err);
             }
         });

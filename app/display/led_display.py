@@ -5,6 +5,8 @@ from PIL import Image
 
 class LEDDisplay:
     def __init__(self,
+                 font_path: str,
+                 bold_font_path: str,
                  led_rows=32,
                  led_cols=64,
                  led_chain=1,
@@ -50,15 +52,13 @@ class LEDDisplay:
         self.matrix = RGBMatrix(options = options)
 
         font = graphics.Font()
-        # TODO: Make path dynamic
-        font.LoadFont("/home/caadmin/led-matrix-web/fonts/9x18.bdf")
+        font.LoadFont(font_path)
 
         self.font = font
         
 
         boldFont = graphics.Font()
-        # TODO: Make path dynamic
-        boldFont.LoadFont("/home/caadmin/led-matrix-web/fonts/9x18B.bdf")
+        boldFont.LoadFont(bold_font_path)
 
         self.boldFont = boldFont
     
