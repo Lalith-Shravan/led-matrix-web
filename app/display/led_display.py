@@ -45,22 +45,19 @@ class LEDDisplay:
         options.show_refresh_rate = 1 if led_show_refresh else 0
         options.gpio_slowdown = led_slowdown_gpio
         options.disable_hardware_pulsing = led_no_hardware_pulse
-        options.drop_privileges=not drop_privileges
+        options.drop_privileges=drop_privileges
         if limit_refresh_rate_hz:
             options.limit_refresh_rate_hz = limit_refresh_rate_hz
-        
-        self.matrix = RGBMatrix(options = options)
 
         font = graphics.Font()
         font.LoadFont(font_path)
-
         self.font = font
-        
 
         boldFont = graphics.Font()
         boldFont.LoadFont(bold_font_path)
-
         self.boldFont = boldFont
+
+        self.matrix = RGBMatrix(options = options)
     
     def drawText(self, message):
 

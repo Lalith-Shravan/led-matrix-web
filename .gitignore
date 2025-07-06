@@ -173,4 +173,4 @@ cython_debug/
 .pypirc
 
 # Ignore uploaded files
-app/web/static/uploads/ 
+app/web/static/uploads/* 
