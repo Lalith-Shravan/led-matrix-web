@@ -171,6 +171,3 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
-
-# Ignore uploaded files
-app/web/static/uploads/* 
